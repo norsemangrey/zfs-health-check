@@ -28,7 +28,7 @@ poolDiscordJsonReport=""
 unhealthyConditions='(DEGRADED|FAULTED|OFFLINE|UNAVAIL|REMOVED|FAIL|DESTROYED|corrupt|cannot|unrecover)'
 
 # Define max capacity (%).
-maxCapacity=40
+maxCapacity=80
 
 # Define scrup expiration time (days).
 scrubExpirationDays=36
