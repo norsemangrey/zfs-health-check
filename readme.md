@@ -19,7 +19,7 @@ Bash script to check the health of the ZFS pools on a Linux server running OpenZ
 
 ## Overview
 
-This Bash script performs a health check on ZFS pools, identifying and reporting any potential issues with the pools' health. It provides detailed information about each pool's condition, capacity, errors, and scrub status. The script can send notifications to Discord with the health status of the monitored pools.
+This Bash script reads the healt status on ZFS pools, identifying and reporting any potential issues with the pools' health. It provides detailed information about each pool's condition, capacity, errors, and scrub status. The script can send notifications to Discord with the health status of the monitored pools.
 
 **Compatibility Note:** This script has been tested on **Ubuntu Server 22.04** and should work on other Linux operating systems running OpenZFS.
 
@@ -38,7 +38,7 @@ The script initializes necessary variables, sets paths, and defines parameters s
 
 ### ZFS Pools Health Check
 
-The script performs a health check on each ZFS pool detected on the system. It evaluates the following aspects for each pool:
+The script does a health check on each ZFS pool detected on the system. It evaluates the following aspects for each pool:
 
 **General Condition**: Checks for any unhealthy states and overall pool state.
 **Capacity**: Monitors pool capacity and warns if it exceeds a specified maximum.
