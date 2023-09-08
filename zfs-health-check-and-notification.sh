@@ -1,24 +1,14 @@
 #!/usr/bin/bash
 
-#### DISCORD VARIABLES ####
+#### SET PATHS ####
 
-# Discord webhook address base.
-discordWebhookBase="https://discord.com/api/webhooks"
+# Get filePath to where this script is located.
+thisScriptFile=$(readlink -f "${0}")
+thisScriptPath=$(dirname "${thisScriptFile}")
+parentDirPath=$(dirname "${thisScriptPath}")
 
-# Import secret variables.
-source /home/manager/scripts/zfs-health-check/discord-variables.sh
-
-# Discord secret variables.
-discordToken=${DISCORD_TOKEN}
-discordID=${DISCORD_ID}
-discordUsername=${DISCORD_USER}
-discordAvatarURL=${DISCORD_AVATAR_URL}
-discordRoleID=${DISCORD_ROLE_ID}
-
-# Icon added to the message.
-# Downloaded and hosting this (https://materialdesignicons.com/icon/heart-pulse)
-discordMessageIcon=${DISCORD_MESSAGE_ICON}
-
+# Set other paths.
+notifyScript="${parentDirPath}/notification/discord-webhook.sh"
 
 #### INITIALIZATION & PARAMETERS ####
 
@@ -38,7 +28,7 @@ poolDiscordJsonReport=""
 unhealthyConditions='(DEGRADED|FAULTED|OFFLINE|UNAVAIL|REMOVED|FAIL|DESTROYED|corrupt|cannot|unrecover)'
 
 # Define max capacity (%).
-maxCapacity=80
+maxCapacity=40
 
 # Define scrup expiration time (days).
 scrubExpirationDays=36
@@ -174,55 +164,50 @@ do
 
   # Set JSON notification color.
   if [ ${poolIssues} -eq 0 ]; then
-       discordNotficationColor=166160
+       discordNotficationColor=7909721
        discordDescription="No issues found for this pool."
+       discordMessageIcon="https://i.imgur.com/QqVe9k3.png"
   else
-       discordNotficationColor=15606820
-       discordDescription="There are issues detected for this pool. Actions required by <@&${discordRoleID}>"
+       discordNotficationColor=14495300
+       discordDescription="There are issues detected for this pool. Actions required by @admin>"
+       discordMessageIcon="https://i.imgur.com/lD8QUFd.png"
   fi
 
   # Build pool JSON string for Discord notification.
-  poolDiscordJsonReport=''${poolDiscordJsonReport}'
-                        {
-                          "title": "**Health Summary**",
-                          "author": {
-                            "name": "Pool #'${poolNumber}' ('${poolName}')",
-                            "icon_url": "'"${discordMessageIcon}"'"
-                          },
-                          "description":"'"${discordDescription}"'",
-                          "color":"'"${discordNotficationColor}"'",
-                          "fields": [
-                          {
-                            "name": "Condition",
-                            "value":"'"${poolConditionText}"'"
-                          },
-                          {
-                            "name": "Capacity",
-                            "value": "'"${poolCapacityText}"'"
-                          },
-                          {
-                            "name": "Errors",
-                            "value": "'"${poolErrorsText}"'"
-                          },
-                          {
-                            "name": "Scrub",
-                            "value": "'"${poolScrubText}"'"
-                          }]
-                        },'
+  discordEmbedsJson=''${discordEmbedsJson}'
+                    {
+                      "title": "**Health Summary**",
+                      "author": {
+                        "name": "Pool #'${poolNumber}' ('${poolName}')",
+                        "icon_url": "'"${discordMessageIcon}"'"
+                      },
+                      "description":"'"${discordDescription}"'",
+                      "color":"'"${discordNotficationColor}"'",
+                      "fields": [
+                      {
+                        "name": "Condition",
+                        "value":"'"${poolConditionText}"'"
+                      },
+                      {
+                        "name": "Capacity",
+                        "value": "'"${poolCapacityText}"'"
+                      },
+                      {
+                        "name": "Errors",
+                        "value": "'"${poolErrorsText}"'"
+                      },
+                      {
+                        "name": "Scrub",
+                        "value": "'"${poolScrubText}"'"
+                      }]
+                    },'
 
 done
 
 #### DISCORD NOTIFICATION ####
 
-# Complete the Discord JSON string.
-discordJson='{ "username":"'"${discordUsername}"'",
-               "content":"Report from ZFS health check script on **'$HOSTNAME'** server. The script checked **'${totalPools}'** pools.",
-               "avatar_url":"'"${discordAvatarURL}"'",
-               "allowed_mentions": {
-                 "roles": [ "'"${discordRoleID}"'" ]
-               },
-               "embeds": [ '${poolDiscordJsonReport%?}' ]
-             }'
+# Create content /description section
+discordContentField="Report from ZFS health check script on **'$HOSTNAME'** server. The script checked **'${totalPools}'** pools.",                                    
 
-# Send Discord notification.
-curl -H "Content-Type: application/json" -d "$discordJson" ${discordWebhookBase}"/"${discordID}"/"${discordToken}
+# Pass data to Discord webhooks script for notification.
+${notifyScript} -c "${discordContentField}" -e "${discordEmbedsJson}" -f "${diffReportFile}"
