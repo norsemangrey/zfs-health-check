@@ -84,3 +84,6 @@ To enable Discord notifications, you will need a separate `discord-webhook.sh` s
 [GitHub Repository: discord-webhook-notification](https://github.com/norsemanGrey/discord-webhook-notification)
 
 Make sure to configure and set up the `discord-webhook.sh` script correctly, and ensure it's available in your environment for the notifications to work.
+
+![zfs-health-checker-discord-notification-example](https://github.com/norsemanGrey/zfs-health-check/assets/16608441/27b701da-17d2-4b36-ae33-88e80fc469d8)
+
