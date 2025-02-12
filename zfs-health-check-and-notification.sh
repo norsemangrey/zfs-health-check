@@ -122,7 +122,7 @@ do
   #### SCRUB #####
 
   # Set initial condition text.
-  poolScrupSubText="The pool scrub date has not yet been exeeded."
+  poolScrupSubText="The pool scrub date has not yet been exceeded."
 
   # Get any special conditions.
   if [ $(/sbin/zpool status ${pool} | egrep -c "none requested") -ge 1 ]; then
