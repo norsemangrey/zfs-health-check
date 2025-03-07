@@ -74,7 +74,7 @@ do
   fi
 
   # Get the overall pool state and set notfication text.
-  poolOverallCondition=$(/sbin/zpool status ${pool} | grep state | awk '{print $2}')
+  poolOverallCondition=$(/sbin/zpool status ${pool} | awk '/state:/ {print $2})
   poolConditionText="${poolConditionSubText} Overall state is reporting as **${poolOverallCondition}** for this pool."
 
 
